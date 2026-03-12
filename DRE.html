@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Calculadora DRE</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+<div class="container mt-5">
+
+<h2 class="mb-4">Calculadora DRE</h2>
+
+<form id="dre-form">
+
+<div class="mb-3">
+<label class="form-label">Receita Operacional Bruta</label>
+<input type="number" step="any" class="form-control" id="ro_bruta" required>
+</div>
+
+<div class="mb-3">
+<label class="form-label">Vendas Canceladas</label>
+<input type="number" step="any" class="form-control" id="vendas_canceladas" required>
+</div>
+
+<div class="mb-3">
+<label class="form-label">Descontos</label>
+<input type="number" step="any" class="form-control" id="descontos" required>
+</div>
+
+<div class="mb-3">
+<label class="form-label">CMV</label>
+<input type="number" step="any" class="form-control" id="cmv" required>
+</div>
+
+<div class="mb-3">
+<label class="form-label">Despesas de Vendas</label>
+<input type="number" step="any" class="form-control" id="desp_vendas" required>
+</div>
+
+<div class="mb-3">
+<label class="form-label">Despesas Administrativas</label>
+<input type="number" step="any" class="form-control" id="desp_adm" required>
+</div>
+
+<div class="mb-3">
+<label class="form-label">Despesas Financeiras</label>
+<input type="number" step="any" class="form-control" id="desp_fin" required>
+</div>
+
+<div class="mb-3">
+<label class="form-label">IR</label>
+<input type="number" step="any" class="form-control" id="ir" required>
+</div>
+
+<button type="submit" class="btn btn-primary">
+Calcular DRE
+</button>
+
+</form>
+
+</div>
+
+
+<!-- MODAL -->
+
+<div class="modal fade" id="resultadoModal" tabindex="-1">
+
+<div class="modal-dialog">
+
+<div class="modal-content">
+
+<div class="modal-header">
+<h5 class="modal-title">Resultado da DRE</h5>
+<button class="btn-close" data-bs-dismiss="modal"></button>
+</div>
+
+<div class="modal-body">
+<pre id="resultado"></pre>
+</div>
+
+<div class="modal-footer">
+<button class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+
+<script>
+
+document.getElementById("dre-form").addEventListener("submit", function(e){
+
+e.preventDefault();
+
+const ro_bruta = parseFloat(document.getElementById("ro_bruta").value);
+const vendas_canceladas = parseFloat(document.getElementById("vendas_canceladas").value);
+const descontos = parseFloat(document.getElementById("descontos").value);
+const cmv = parseFloat(document.getElementById("cmv").value);
+const desp_vendas = parseFloat(document.getElementById("desp_vendas").value);
+const desp_adm = parseFloat(document.getElementById("desp_adm").value);
+const desp_fin = parseFloat(document.getElementById("desp_fin").value);
+const ir = parseFloat(document.getElementById("ir").value);
+
+if(
+isNaN(ro_bruta) ||
+isNaN(vendas_canceladas) ||
+isNaN(descontos) ||
+isNaN(cmv) ||
+isNaN(desp_vendas) ||
+isNaN(desp_adm) ||
+isNaN(desp_fin) ||
+isNaN(ir)
+){
+alert("Preencha todos os campos corretamente");
+return;
+}
+
+
+const receita_liquida = ro_bruta - vendas_canceladas - descontos;
+const lucro_bruto = receita_liquida - cmv;
+const lucro_operacional = lucro_bruto - desp_vendas - desp_adm;
+const lucro_antes_ir = lucro_operacional - desp_fin;
+const lucro_liquido = lucro_antes_ir - ir;
+
+
+const f = v => v.toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
+
+
+const resultado = `
+Receita Operacional Bruta:       ${f(ro_bruta)}
+(-) Vendas Canceladas:           ${f(vendas_canceladas)}
+(-) Descontos:                   ${f(descontos)}
+
+Receita Operacional Líquida:     ${f(receita_liquida)}
+
+(-) CMV:                         ${f(cmv)}
+
+Lucro Bruto:                     ${f(lucro_bruto)}
+
+(-) Despesas de Vendas:          ${f(desp_vendas)}
+(-) Despesas Administrativas:    ${f(desp_adm)}
+
+Lucro Operacional:               ${f(lucro_operacional)}
+
+(-) Despesas Financeiras:        ${f(desp_fin)}
+
+Lucro antes do IR:               ${f(lucro_antes_ir)}
+
+(-) IR:                          ${f(ir)}
+
+LUCRO LÍQUIDO:                   ${f(lucro_liquido)}
+`;
+
+document.getElementById("resultado").textContent = resultado;
+
+const modal = new bootstrap.Modal(document.getElementById("resultadoModal"));
+
+modal.show();
+
+});
+
+</script>
+
+</body>
+</html>
