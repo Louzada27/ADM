@@ -184,114 +184,69 @@ Fechar
 
 
 <script>
-
 function addCampo(secao){
-
-let container = document.getElementById(secao)
-
-let div = document.createElement("div")
-
-div.className = "row mb-2"
-
-div.innerHTML = `
-
-<div class="col-7">
-<input type="text" class="form-control nome" placeholder="Conta">
-</div>
-
-<div class="col-5">
-<input type="number" step="any" class="form-control valor" placeholder="Valor">
-</div>
-
-`
-
-container.appendChild(div)
-
+    let container = document.getElementById(secao)
+    let div = document.createElement("div")
+    div.className = "row mb-2"
+    div.innerHTML = `
+        <div class="col-7">
+            <input type="text" class="form-control nome" placeholder="Conta">
+        </div>
+        <div class="col-5">
+            <input type="number" step="any" class="form-control valor" placeholder="Valor">
+        </div>
+    `
+    container.appendChild(div)
 }
 
-
-
-function somar(secao){
-
-let total = 0
-
-let valores = document.querySelectorAll(`#${secao} .valor`)
-
-valores.forEach(v => {
-
-let n = parseFloat(v.value)
-
-if(!isNaN(n)){
-
-total += n
-
+// Função para somar e gerar lista detalhada
+function detalhar(secao){
+    let valores = document.querySelectorAll(`#${secao} .valor`)
+    let nomes = document.querySelectorAll(`#${secao} .nome`)
+    let total = 0
+    let detalhes = ''
+    
+    valores.forEach((v, i) => {
+        let n = parseFloat(v.value)
+        if(!isNaN(n)){
+            total += n
+            detalhes += `${nomes[i].value || 'Conta'}: ${n.toLocaleString("pt-BR",{style:"currency",currency:"BRL"})}\n`
+        }
+    })
+    detalhes += `TOTAL: ${total.toLocaleString("pt-BR",{style:"currency",currency:"BRL"})}\n\n`
+    return {total, detalhes}
 }
-
-})
-
-return total
-
-}
-
-
 
 function calcularBalanco(){
+    let ativo_c = detalhar("ativo_circulante")
+    let ativo_nc = detalhar("ativo_nao_circulante")
+    let passivo_c = detalhar("passivo_circulante")
+    let passivo_nc = detalhar("passivo_nao_circulante")
+    let patrimonio = detalhar("patrimonio")
 
-let ativo_c = somar("ativo_circulante")
-let ativo_nc = somar("ativo_nao_circulante")
-
-let passivo_c = somar("passivo_circulante")
-let passivo_nc = somar("passivo_nao_circulante")
-
-let patrimonio = somar("patrimonio")
-
-let total_ativo = ativo_c + ativo_nc
-
-let total_passivo = passivo_c + passivo_nc + patrimonio
-
-let f = v => v.toLocaleString("pt-BR",{style:"currency",currency:"BRL"})
-
+    let total_ativo = ativo_c.total + ativo_nc.total
+    let total_passivo_pl = passivo_c.total + passivo_nc.total + patrimonio.total
 
 let resultado = `
-
 ATIVO
-Ativo Circulante:       ${f(ativo_c)}
-Ativo Não Circulante:   ${f(ativo_nc)}
-
-TOTAL ATIVO:            ${f(total_ativo)}
-
+Ativo Circulante:
+${ativo_c.detalhes}Ativo Não Circulante:
+${ativo_nc.detalhes}TOTAL ATIVO: ${total_ativo.toLocaleString("pt-BR",{style:"currency",currency:"BRL"})}
 
 PASSIVO
-Passivo Circulante:     ${f(passivo_c)}
-Passivo Não Circulante: ${f(passivo_nc)}
+Passivo Circulante:
+${passivo_c.detalhes}Passivo Não Circulante:
+${passivo_nc.detalhes}TOTAL PASSIVO: ${(passivo_c.total + passivo_nc.total).toLocaleString("pt-BR",{style:"currency",currency:"BRL"})}
 
 PATRIMÔNIO LÍQUIDO
-Patrimônio Líquido:     ${f(patrimonio)}
-
-TOTAL PASSIVO + PL:     ${f(total_passivo)}
-
+Patrimônio Líquido:
+${patrimonio.detalhes}TOTAL PATRIMÔNIO LÍQUIDO: ${patrimonio.total.toLocaleString("pt-BR",{style:"currency",currency:"BRL"})}
 `
 
-
-if(total_ativo === total_passivo){
-
-resultado += "\n✅ Balanço FECHADO"
-
-}else{
-
-resultado += "\n❌ Balanço NÃO fecha"
-
+    document.getElementById("resultado").textContent = resultado
+    let modal = new bootstrap.Modal(document.getElementById("resultadoModal"))
+    modal.show()
 }
-
-
-document.getElementById("resultado").textContent = resultado
-
-let modal = new bootstrap.Modal(document.getElementById("resultadoModal"))
-
-modal.show()
-
-}
-
 </script>
 
 
