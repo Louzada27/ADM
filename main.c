@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-
+#include <math.h>
 // -------- STRUCTS --------
 typedef struct {
     double receitaBruta;
@@ -85,7 +85,7 @@ void calcularBalanco(Balanco *b, double lucro) {
 
     printf("\nPASSIVO + PL:\t\t R$ %.2f\n", total);
 
-    if (ativoTotal == total)
+    if (fabs(ativoTotal - total) < 0.01)
         printf("EQUAÇÃO FUNDAMENTAL: OK\n");
     else
         printf("EQUAÇÃO FUNDAMENTAL: ERRO\n");
@@ -120,15 +120,20 @@ void calcularIndices(Balanco *b, DRE *d, Resultado *r) {
 
 // -------- MAIN --------
 int main() {
+    int modoTeste;
+
+    printf("Modo teste? (1=sim / 0=nao): ");
+    scanf("%d", &modoTeste);
 
     DRE d = {0};
     Balanco b = {0};
     Resultado r = {0};
     char nome[50];
 
+    
+    if(modoTeste == 0){
     printf("Nome da Empresa: ");
     scanf(" %[^\n]", nome); // CORREÇÃO AQUI
-
     // -------- DRE --------
     printf("\n--- ENTRADA DRE ---\n");
     printf("Receita Bruta: "); scanf("%lf", &d.receitaBruta);
@@ -176,6 +181,106 @@ int main() {
 
     calcularBalanco(&b, r.lucroLiquido);
     calcularIndices(&b, &d, &r);
+    }else{
+    printf("\nNome da Empresa: Teste LTDA\n");
 
+    // -------- DRE --------
+    printf("\n--- ENTRADA DRE ---\n");
+
+    d.receitaBruta = 100000;
+    printf("Receita Bruta: %.2f\n", d.receitaBruta);
+
+    d.deducoes = 5000;
+    printf("Deducoes: %.2f\n", d.deducoes);
+
+    d.custoMercadorias = 40000;
+    printf("CMV: %.2f\n", d.custoMercadorias);
+
+    d.despesasOperacionais = 15000;
+    printf("Despesas Operacionais: %.2f\n", d.despesasOperacionais);
+
+    d.despesasFinanceiras = 2000;
+    printf("Despesas Financeiras: %.2f\n", d.despesasFinanceiras);
+
+    d.receitasFinanceiras = 1000;
+    printf("Receitas Financeiras: %.2f\n", d.receitasFinanceiras);
+
+    d.impostoRenda = 5000;
+    printf("IR: %.2f\n", d.impostoRenda);
+
+    d.csl = 2000;
+    printf("CSL: %.2f\n", d.csl);
+
+    calcularDRE(&d, &r);
+
+    // -------- ATIVO CIRCULANTE --------
+    printf("\n--- ENTRADA BALANCO (ATIVO CIRCULANTE) ---\n");
+
+    b.caixa = 20000;
+    printf("Caixa: %.2f\n", b.caixa);
+
+    b.bancos = 10000;
+    printf("Bancos: %.2f\n", b.bancos);
+
+    b.aplicacoes = 5000;
+    printf("Aplicacoes: %.2f\n", b.aplicacoes);
+
+    b.contasReceber = 15000;
+    printf("Contas a Receber: %.2f\n", b.contasReceber);
+
+    b.estoques = 10000;
+    printf("Estoques: %.2f\n", b.estoques);
+
+    // -------- ATIVO NÃO CIRCULANTE --------
+    printf("\n--- ENTRADA BALANCO (ATIVO NAO CIRCULANTE) ---\n");
+
+    b.realizavelLP = 8000;
+    printf("Realizavel LP: %.2f\n", b.realizavelLP);
+
+    b.investimentos = 10000;
+    printf("Investimentos: %.2f\n", b.investimentos);
+
+    b.imobilizado = 20000;
+    printf("Imobilizado: %.2f\n", b.imobilizado);
+
+    b.intangivel = 10000;
+    printf("Intangivel: %.2f\n", b.intangivel);
+
+    // -------- PASSIVO CIRCULANTE --------
+    printf("\n--- ENTRADA BALANCO (PASSIVO CIRCULANTE) ---\n");
+
+    b.fornecedores = 9000;
+    printf("Fornecedores: %.2f\n", b.fornecedores);
+
+    b.contasPagar = 4000;
+    printf("Contas a Pagar: %.2f\n", b.contasPagar);
+
+    // -------- PASSIVO NÃO CIRCULANTE --------
+    printf("\n--- ENTRADA BALANCO (PASSIVO NAO CIRCULANTE) ---\n");
+
+    b.emprestimosLP = 15000;
+    printf("Emprestimos LP: %.2f\n", b.emprestimosLP);
+
+    b.provisoes = 5000;
+    printf("Provisoes: %.2f\n", b.provisoes);
+
+    // -------- PATRIMÔNIO LÍQUIDO --------
+    printf("\n--- ENTRADA BALANCO (PATRIMONIO LIQUIDO) ---\n");
+
+    b.capitalSocial = 30000;
+    printf("Capital Social: %.2f\n", b.capitalSocial);
+
+    b.reservasCapital = 8000;
+    printf("Reservas de Capital: %.2f\n", b.reservasCapital);
+
+    b.reservasLucros = 3000;
+    printf("Reservas de Lucros: %.2f\n", b.reservasLucros);
+
+    b.lucrosAcumulados = 2000;
+    printf("Lucros Acumulados (Inicial): %.2f\n", b.lucrosAcumulados);
+
+    calcularBalanco(&b, r.lucroLiquido);
+    calcularIndices(&b, &d, &r);
+}
     return 0;
 }
